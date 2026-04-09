@@ -1,0 +1,59 @@
+// Dark aviation terminal theme
+
+// Background
+$color-bg-base: #0a0c10;
+$color-bg-surface: #111318;
+$color-bg-elevated: #1a1d24;
+$color-bg-hover: #1f2330;
+
+// Borders
+$color-border: #2a2e3a;
+$color-border-subtle: #1e2130;
+
+// Text
+$color-text-primary: #e2e8f0;
+$color-text-secondary: #8892a4;
+$color-text-muted: #4a5568;
+$color-text-accent: #38bdf8;
+
+// Status / semantic
+$color-airborne: #4ade80;
+$color-grounded: #f59e0b;
+$color-domestic: #818cf8;
+$color-international: #38bdf8;
+$color-alert: #f87171;
+
+// Skeleton shimmer
+$color-skeleton-base: #1a1d24;
+$color-skeleton-highlight: #252936;
+
+// Typography
+$font-mono: 'Geist Mono', 'Fira Code', 'Cascadia Code', monospace;
+$font-ui: system-ui, -apple-system, sans-serif;
+
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.8125rem;
+$font-size-base: 0.875rem;
+$font-size-md: 1rem;
+
+// Spacing
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-6: 1.5rem;
+$space-8: 2rem;
+
+// Layout
+$table-row-height: 2.5rem;
+$header-height: 3.5rem;
+$sidebar-width: 280px;
+
+// Transitions
+$transition-fast: 120ms ease;
+$transition-base: 200ms ease;
+
+// Z-index
+$z-header: 100;
+$z-dropdown: 200;
+$z-overlay: 300;
