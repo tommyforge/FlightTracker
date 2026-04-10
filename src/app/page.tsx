@@ -244,8 +244,9 @@ export default function Home() {
     return {
       ...f,
       staticAirline,
-      // pure operator field from metadata; display falls back to staticAirline
-      airline: meta?.operator ?? null,
+      // operator is preferred when non-empty; staticAirline is the floor — never
+      // overwritten by a null/empty operator (|| catches both null and "")
+      airline: meta?.operator || staticAirline,
       aircraftType: meta?.aircraftType ?? null,
       manufacturer: meta?.manufacturer ?? null,
       isDomestic: state.routeCache[f.callsign]?.isDomestic ?? null,
