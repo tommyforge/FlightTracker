@@ -39,11 +39,14 @@ export async function getOpenSkyToken(): Promise<string | null> {
         cache: 'no-store',
       }
     )
-  } catch {
-    return null
+  } catch (err) {
+    throw new Error(`OpenSky token fetch failed (network error): ${err}`)
   }
 
-  if (!res.ok) return null
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`OpenSky token endpoint returned ${res.status}: ${body}`)
+  }
 
   const data = (await res.json()) as { access_token: string; expires_in: number }
   tokenCache = {

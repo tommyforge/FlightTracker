@@ -196,14 +196,13 @@ export default function Home() {
   const handleRowsVisible = useCallback(
     (rows: EnrichedFlight[]) => {
       for (const row of rows) {
-        if (
-          !(row.icao24 in state.aircraftCache) &&
-          !pendingAircraft.current.has(row.icao24)
-        ) {
+        if (!pendingAircraft.current.has(row.icao24)) {
           pendingAircraft.current.add(row.icao24)
+          console.log('[page] fetching aircraft metadata for', row.icao24)
           fetch(`/api/aircraft/${row.icao24}`)
             .then((r) => r.json())
             .then((data: AircraftMeta) => {
+              console.log('[page] aircraft loaded', row.icao24, 'operator:', data.operator, 'type:', data.aircraftType)
               dispatch({ type: 'AIRCRAFT_LOADED', icao24: row.icao24, data })
             })
             .catch(() => {
@@ -215,10 +214,7 @@ export default function Home() {
             })
         }
 
-        if (
-          !(row.callsign in state.routeCache) &&
-          !pendingRoute.current.has(row.callsign)
-        ) {
+        if (!pendingRoute.current.has(row.callsign)) {
           pendingRoute.current.add(row.callsign)
           fetch(`/api/route/${row.callsign}`)
             .then((r) => r.json())
@@ -235,24 +231,30 @@ export default function Home() {
         }
       }
     },
-    [state.aircraftCache, state.routeCache],
+    [], // pendingAircraft/pendingRoute refs handle deduplication — no state deps needed
   )
 
   // -------------------------------------------------------------------
   // Enrich + filter
   // -------------------------------------------------------------------
-  const enrichedFlights: EnrichedFlight[] = state.flights.map((f) => ({
-    ...f,
-    staticAirline: lookupAirline(f.callsign)?.name ?? null,
-    airline: state.aircraftCache[f.icao24]?.operator ?? null,
-    aircraftType: state.aircraftCache[f.icao24]?.aircraftType ?? null,
-    manufacturer: state.aircraftCache[f.icao24]?.manufacturer ?? null,
-    isDomestic: state.routeCache[f.callsign]?.isDomestic ?? null,
-    depCountry: state.routeCache[f.callsign]?.depCountry ?? null,
-    arrCountry: state.routeCache[f.callsign]?.arrCountry ?? null,
-    _aircraftLoading: !(f.icao24 in state.aircraftCache),
-    _routeLoading: !(f.callsign in state.routeCache),
-  }))
+  const enrichedFlights: EnrichedFlight[] = state.flights.map((f) => {
+    const meta = state.aircraftCache[f.icao24]
+    const staticAirline = lookupAirline(f.callsign)?.name ?? null
+    return {
+      ...f,
+      staticAirline,
+      // operator from metadata is preferred; fall back to static airline name when
+      // metadata has loaded but operator is null (most OpenSky aircraft lack this field)
+      airline: meta?.operator ?? (meta !== undefined ? staticAirline : null),
+      aircraftType: meta?.aircraftType ?? null,
+      manufacturer: meta?.manufacturer ?? null,
+      isDomestic: state.routeCache[f.callsign]?.isDomestic ?? null,
+      depCountry: state.routeCache[f.callsign]?.depCountry ?? null,
+      arrCountry: state.routeCache[f.callsign]?.arrCountry ?? null,
+      _aircraftLoading: meta === undefined,
+      _routeLoading: !(f.callsign in state.routeCache),
+    }
+  })
 
   const filteredFlights = applyFilters(enrichedFlights, state.filters)
 

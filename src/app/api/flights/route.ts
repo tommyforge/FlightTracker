@@ -28,64 +28,71 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function GET() {
+  let token: string | null = null
   try {
-    const token = await getOpenSkyToken()
-
-    // Build headers: Bearer token when credentials are present, anonymous otherwise
-    const headers: HeadersInit = token
-      ? { Authorization: `Bearer ${token}` }
-      : {}
-
-    let res: Response
-    try {
-      res = await fetch('https://opensky-network.org/api/states/all', {
-        headers,
-        cache: 'no-store',
-      })
-    } catch {
-      return NextResponse.json({ error: 'OpenSky unreachable' }, { status: 502 })
-    }
-
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: `OpenSky returned ${res.status}` },
-        { status: 502 }
-      )
-    }
-
-    const data = (await res.json()) as { states: StateVector[] | null }
-    const states = data.states ?? []
-
-    const flights: Flight[] = states
-      .filter((s) => s[1] !== null && s[1].trim() !== '')
-      .map((s) => {
-        const callsign = (s[1] as string).trim()
-        const velocityMs = s[9]
-
-        return {
-          icao24: s[0],
-          callsign,
-          originCountry: s[2],
-          airline: null,        // populated lazily via /api/aircraft/[icao24] (operator field)
-          airlineCountry: null,
-          aircraftType: null,   // populated lazily via /api/aircraft/[icao24]
-          manufacturer: null,
-          lat: s[6],
-          lon: s[5],
-          altitudeM: s[7],
-          speedKts: velocityMs !== null ? Math.round(velocityMs * 1.94384) : null,
-          heading: s[10],
-          verticalRate: s[11],
-          onGround: s[8],
-          isDomestic: null,     // populated lazily via /api/route/[callsign]
-          depCountry: null,
-          arrCountry: null,
-        }
-      })
-
-    return NextResponse.json(flights)
+    token = await getOpenSkyToken()
   } catch (err) {
-    console.error('[/api/flights]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('[/api/flights] auth error:', err)
+    return NextResponse.json({ error: `OpenSky authentication failed: ${err}` }, { status: 502 })
   }
+
+  console.log('[/api/flights] auth:', token ? 'Bearer (authenticated)' : 'anonymous')
+
+  // Build headers: Bearer token when credentials are present, anonymous otherwise
+  const headers: HeadersInit = token
+    ? { Authorization: `Bearer ${token}` }
+    : {}
+
+  let res: Response
+  try {
+    res = await fetch('https://opensky-network.org/api/states/all', {
+      headers,
+      cache: 'no-store',
+    })
+  } catch (err) {
+    console.error('[/api/flights] OpenSky fetch error:', err)
+    return NextResponse.json({ error: 'OpenSky unreachable' }, { status: 502 })
+  }
+
+  console.log('[/api/flights] OpenSky status:', res.status)
+
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: `OpenSky returned ${res.status}` },
+      { status: 502 }
+    )
+  }
+
+  const data = (await res.json()) as { states: StateVector[] | null }
+  const states = data.states ?? []
+
+  const flights: Flight[] = states
+    .filter((s) => s[1] !== null && s[1].trim() !== '')
+    .map((s) => {
+      const callsign = (s[1] as string).trim()
+      const velocityMs = s[9]
+
+      return {
+        icao24: s[0],
+        callsign,
+        originCountry: s[2],
+        airline: null,        // populated lazily via /api/aircraft/[icao24] (operator field)
+        airlineCountry: null,
+        aircraftType: null,   // populated lazily via /api/aircraft/[icao24]
+        manufacturer: null,
+        lat: s[6],
+        lon: s[5],
+        altitudeM: s[7],
+        speedKts: velocityMs !== null ? Math.round(velocityMs * 1.94384) : null,
+        heading: s[10],
+        verticalRate: s[11],
+        onGround: s[8],
+        isDomestic: null,     // populated lazily via /api/route/[callsign]
+        depCountry: null,
+        arrCountry: null,
+      }
+    })
+
+  console.log(`[/api/flights] states: ${states.length}, flights (with callsign): ${flights.length}`)
+  return NextResponse.json(flights)
 }

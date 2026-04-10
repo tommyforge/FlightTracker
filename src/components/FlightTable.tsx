@@ -113,6 +113,10 @@ export default function FlightTable({ flights, loading, refreshId, onRowsVisible
   const [pageSize, setPageSize] = useState<50 | 100 | 200>(50)
 
   const prevRefreshId = useRef(refreshId)
+  // Stable ref so the lazy-fetch effect doesn't re-fire every time the callback
+  // identity changes (which happens on every completed metadata fetch in the parent)
+  const onRowsVisibleRef = useRef(onRowsVisible)
+  useEffect(() => { onRowsVisibleRef.current = onRowsVisible })
 
   // Reset page on new data set or filter change
   useEffect(() => {
@@ -127,15 +131,17 @@ export default function FlightTable({ flights, loading, refreshId, onRowsVisible
   const safePage = Math.min(page, totalPages - 1)
   const pageRows = sorted.slice(safePage * pageSize, (safePage + 1) * pageSize)
 
-  // Notify parent of visible rows for lazy fetching
+  // Notify parent of visible rows for lazy fetching.
+  // Only re-fires when the set of visible icao24s actually changes — NOT when the
+  // callback reference changes (which would happen 50+ times as metadata loads).
+  const pageKey = pageRows.map((r) => r.icao24).join(',')
   useEffect(() => {
-    if (pageRows.length > 0) onRowsVisible(pageRows)
+    if (pageRows.length > 0) {
+      console.log('[FlightTable] visible rows changed, triggering lazy fetch for', pageRows.length, 'rows')
+      onRowsVisibleRef.current(pageRows)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // deliberately use serialized identities to avoid stale closure on pageRows
-    pageRows.map((r) => r.icao24).join(','),
-    onRowsVisible,
-  ])
+  }, [pageKey])
 
   function toggleSort(key: SortKey) {
     if (key === sortKey) {
