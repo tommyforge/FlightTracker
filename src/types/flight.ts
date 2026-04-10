@@ -22,6 +22,7 @@ export interface FilterState {
 
 // Flight with cache values merged in + loading flags (used by UI components)
 export interface EnrichedFlight extends Flight {
+  staticAirline: string | null  // eager: callsign prefix → airlines.json (for filter dropdown)
   _aircraftLoading: boolean
   _routeLoading: boolean
 }

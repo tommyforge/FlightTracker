@@ -11,6 +11,7 @@ import type {
 import FlightTable from '@/components/FlightTable'
 import Filters from '@/components/Filters'
 import StatusBar from '@/components/StatusBar'
+import { lookupAirline } from '@/lib/airlines'
 import styles from './page.module.scss'
 
 const REFRESH_INTERVAL = 30 // seconds
@@ -125,7 +126,12 @@ function applyFilters(flights: EnrichedFlight[], filters: FilterState): Enriched
         return false
     }
     if (filters.airlineCountry && f.airlineCountry !== filters.airlineCountry) return false
-    if (filters.airline && f.airline !== filters.airline) return false
+    if (filters.airline) {
+      const q = filters.airline.toLowerCase()
+      const matchedStatic = f.staticAirline?.toLowerCase() === q
+      const matchedOperator = f.airline !== null && f.airline.toLowerCase() === q
+      if (!matchedStatic && !matchedOperator) return false
+    }
     if (filters.aircraftType && f.aircraftType !== filters.aircraftType) return false
     if (filters.status === 'airborne' && f.onGround) return false
     if (filters.status === 'grounded' && !f.onGround) return false
@@ -237,6 +243,7 @@ export default function Home() {
   // -------------------------------------------------------------------
   const enrichedFlights: EnrichedFlight[] = state.flights.map((f) => ({
     ...f,
+    staticAirline: lookupAirline(f.callsign)?.name ?? null,
     airline: state.aircraftCache[f.icao24]?.operator ?? null,
     aircraftType: state.aircraftCache[f.icao24]?.aircraftType ?? null,
     manufacturer: state.aircraftCache[f.icao24]?.manufacturer ?? null,

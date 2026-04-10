@@ -19,9 +19,11 @@ export default function Filters({ flights, aircraftCache, filters, onChange }: P
     return [...s].sort()
   }, [flights])
 
+  // Populate from staticAirline (callsign-prefix lookup — available immediately
+  // on load for all flights, not dependent on lazy metadata)
   const airlines = useMemo(() => {
     const s = new Set<string>()
-    for (const f of flights) if (f.airline) s.add(f.airline)
+    for (const f of flights) if (f.staticAirline) s.add(f.staticAirline)
     return [...s].sort()
   }, [flights])
 
