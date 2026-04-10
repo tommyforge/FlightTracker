@@ -128,9 +128,10 @@ function applyFilters(flights: EnrichedFlight[], filters: FilterState): Enriched
     if (filters.airlineCountry && f.airlineCountry !== filters.airlineCountry) return false
     if (filters.airline) {
       const q = filters.airline.toLowerCase()
-      const matchedStatic = f.staticAirline?.toLowerCase() === q
-      const matchedOperator = f.airline !== null && f.airline.toLowerCase() === q
-      if (!matchedStatic && !matchedOperator) return false
+      // staticAirline is always available (eager callsign-prefix lookup) — checked first
+      // so DLH* flights match "Lufthansa" immediately before operator has loaded.
+      // f.airline is the operator from metadata (lazy); checked second as a refinement.
+      if (f.staticAirline?.toLowerCase() !== q && f.airline?.toLowerCase() !== q) return false
     }
     if (filters.aircraftType && f.aircraftType !== filters.aircraftType) return false
     if (filters.status === 'airborne' && f.onGround) return false
@@ -243,9 +244,8 @@ export default function Home() {
     return {
       ...f,
       staticAirline,
-      // operator from metadata is preferred; fall back to static airline name when
-      // metadata has loaded but operator is null (most OpenSky aircraft lack this field)
-      airline: meta?.operator ?? (meta !== undefined ? staticAirline : null),
+      // pure operator field from metadata; display falls back to staticAirline
+      airline: meta?.operator ?? null,
       aircraftType: meta?.aircraftType ?? null,
       manufacturer: meta?.manufacturer ?? null,
       isDomestic: state.routeCache[f.callsign]?.isDomestic ?? null,

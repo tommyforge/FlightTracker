@@ -244,10 +244,9 @@ export default function FlightTable({ flights, loading, refreshId, onRowsVisible
               <tr key={f.icao24} className={styles.tr}>
                 <td className={`${styles.td} ${styles.callsign}`}>{f.callsign}</td>
                 <td className={`${styles.td} ${styles.lazy}`}>
-                  {f._aircraftLoading
-                    ? <span className={styles.skeleton} />
-                    : f.airline ?? '—'
-                  }
+                  {/* staticAirline is always available — show it immediately.
+                      operator refines/confirms the name once metadata loads. */}
+                  {f.airline ?? f.staticAirline ?? '—'}
                 </td>
                 <td className={styles.td}>{f.airlineCountry ?? '—'}</td>
                 <td className={`${styles.td} ${styles.lazy}`}>
