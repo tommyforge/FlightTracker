@@ -1,6 +1,7 @@
 export interface AircraftMeta {
   aircraftType: string | null
   manufacturer: string | null
+  operator: string | null       // airline/operator name from OpenSky metadata
 }
 
 export interface RouteInfo {
@@ -29,7 +30,7 @@ export interface Flight {
   icao24: string
   callsign: string
   originCountry: string       // from OpenSky states
-  airline: string | null      // from static JSON lookup
+  airline: string | null      // from OpenSky metadata operator field (lazy)
   airlineCountry: string | null
   aircraftType: string | null // from OpenSky metadata (lazy)
   manufacturer: string | null

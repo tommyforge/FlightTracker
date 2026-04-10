@@ -36,7 +36,7 @@ export async function getOpenSkyToken(): Promise<string | null> {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString(),
-        next: { revalidate: 0 },
+        cache: 'no-store',
       }
     )
   } catch {

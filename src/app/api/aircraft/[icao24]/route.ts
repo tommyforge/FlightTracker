@@ -4,6 +4,7 @@ import { getOpenSkyToken } from '@/lib/opensky'
 interface AircraftMeta {
   aircraftType: string | null
   manufacturer: string | null
+  operator: string | null
 }
 
 /**
@@ -38,7 +39,7 @@ export async function GET(
 
   if (!token) {
     // No credentials — return null data gracefully
-    return NextResponse.json({ aircraftType: null, manufacturer: null })
+    return NextResponse.json({ aircraftType: null, manufacturer: null, operator: null })
   }
 
   try {
@@ -46,13 +47,13 @@ export async function GET(
       `https://opensky-network.org/api/metadata/aircraft/icao/${icao24}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-        next: { revalidate: 0 },
+        cache: 'no-store',
       }
     )
 
     if (!res.ok) {
       // Aircraft not found or API error — cache null result to avoid re-fetching
-      const empty: AircraftMeta = { aircraftType: null, manufacturer: null }
+      const empty: AircraftMeta = { aircraftType: null, manufacturer: null, operator: null }
       cache.set(icao24, { data: empty, expiresAt: Date.now() + TTL_MS })
       return NextResponse.json(empty)
     }
@@ -61,17 +62,19 @@ export async function GET(
       typecode?: string
       manufacturerName?: string
       model?: string
+      operator?: string
     }
 
     const data: AircraftMeta = {
       aircraftType: raw.typecode ?? raw.model ?? null,
       manufacturer: raw.manufacturerName ?? null,
+      operator: raw.operator ?? null,
     }
 
     cache.set(icao24, { data, expiresAt: Date.now() + TTL_MS })
     return NextResponse.json(data)
   } catch (err) {
     console.error('[/api/aircraft]', err)
-    return NextResponse.json({ aircraftType: null, manufacturer: null })
+    return NextResponse.json({ aircraftType: null, manufacturer: null, operator: null })
   }
 }

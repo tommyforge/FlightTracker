@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { Flight } from '@/types/flight'
-import { lookupAirline } from '@/lib/airlines'
 import { getOpenSkyToken } from '@/lib/opensky'
 
 // OpenSky states/all returns a `states` array where each element is a fixed-position array.
@@ -32,18 +31,16 @@ export async function GET() {
   try {
     const token = await getOpenSkyToken()
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    }
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
+    // Build headers: Bearer token when credentials are present, anonymous otherwise
+    const headers: HeadersInit = token
+      ? { Authorization: `Bearer ${token}` }
+      : {}
 
     let res: Response
     try {
       res = await fetch('https://opensky-network.org/api/states/all', {
         headers,
-        next: { revalidate: 0 },
+        cache: 'no-store',
       })
     } catch {
       return NextResponse.json({ error: 'OpenSky unreachable' }, { status: 502 })
@@ -63,15 +60,14 @@ export async function GET() {
       .filter((s) => s[1] !== null && s[1].trim() !== '')
       .map((s) => {
         const callsign = (s[1] as string).trim()
-        const airline = lookupAirline(callsign)
         const velocityMs = s[9]
 
         return {
           icao24: s[0],
           callsign,
           originCountry: s[2],
-          airline: airline?.name ?? null,
-          airlineCountry: airline?.country ?? null,
+          airline: null,        // populated lazily via /api/aircraft/[icao24] (operator field)
+          airlineCountry: null,
           aircraftType: null,   // populated lazily via /api/aircraft/[icao24]
           manufacturer: null,
           lat: s[6],

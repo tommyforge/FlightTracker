@@ -204,7 +204,7 @@ export default function Home() {
               dispatch({
                 type: 'AIRCRAFT_LOADED',
                 icao24: row.icao24,
-                data: { aircraftType: null, manufacturer: null },
+                data: { aircraftType: null, manufacturer: null, operator: null },
               })
             })
         }
@@ -237,6 +237,7 @@ export default function Home() {
   // -------------------------------------------------------------------
   const enrichedFlights: EnrichedFlight[] = state.flights.map((f) => ({
     ...f,
+    airline: state.aircraftCache[f.icao24]?.operator ?? null,
     aircraftType: state.aircraftCache[f.icao24]?.aircraftType ?? null,
     manufacturer: state.aircraftCache[f.icao24]?.manufacturer ?? null,
     isDomestic: state.routeCache[f.callsign]?.isDomestic ?? null,

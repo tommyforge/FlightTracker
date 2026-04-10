@@ -33,7 +33,7 @@ interface Column {
 
 const COLUMNS: Column[] = [
   { key: 'callsign',       label: 'Callsign' },
-  { key: 'airline',        label: 'Airline' },
+  { key: 'airline',        label: 'Airline', lazy: true },
   { key: 'airlineCountry', label: 'Airline Country' },
   { key: 'aircraftType',   label: 'Aircraft Type', lazy: true },
   { key: 'originCountry',  label: 'Origin Country' },
@@ -237,7 +237,12 @@ export default function FlightTable({ flights, loading, refreshId, onRowsVisible
             {pageRows.map((f) => (
               <tr key={f.icao24} className={styles.tr}>
                 <td className={`${styles.td} ${styles.callsign}`}>{f.callsign}</td>
-                <td className={styles.td}>{f.airline ?? '—'}</td>
+                <td className={`${styles.td} ${styles.lazy}`}>
+                  {f._aircraftLoading
+                    ? <span className={styles.skeleton} />
+                    : f.airline ?? '—'
+                  }
+                </td>
                 <td className={styles.td}>{f.airlineCountry ?? '—'}</td>
                 <td className={`${styles.td} ${styles.lazy}`}>
                   {f._aircraftLoading
