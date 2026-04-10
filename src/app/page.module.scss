@@ -7,6 +7,15 @@
   background: $color-bg-base;
 }
 
+// Map view: fixed full-viewport layout so the map fills remaining height
+.pageMap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: $color-bg-base;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -22,6 +31,45 @@
   justify-content: space-between;
   gap: $space-4;
   height: $header-height;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.viewToggle {
+  display: flex;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.viewBtn,
+.viewBtnActive {
+  padding: 0 $space-3;
+  height: 1.75rem;
+  background: transparent;
+  border: none;
+  color: $color-text-muted;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    color: $color-text-primary;
+    background: $color-bg-hover;
+  }
+}
+
+.viewBtnActive {
+  background: $color-bg-elevated;
+  color: $color-text-accent;
+  cursor: default;
 }
 
 .title {

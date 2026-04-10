@@ -1,6 +1,7 @@
 'use client'
 
-import { useReducer, useEffect, useCallback, useRef } from 'react'
+import { useReducer, useEffect, useCallback, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import type {
   Flight,
   AircraftMeta,
@@ -13,6 +14,11 @@ import Filters from '@/components/Filters'
 import StatusBar from '@/components/StatusBar'
 import { lookupAirline } from '@/lib/airlines'
 import styles from './page.module.scss'
+
+// Loaded only on the client — MapLibre GL JS requires browser APIs
+const FlightMap = dynamic(() => import('@/components/FlightMap'), { ssr: false })
+
+type View = 'table' | 'map'
 
 const REFRESH_INTERVAL = 30 // seconds
 
@@ -154,6 +160,8 @@ function applyFilters(flights: EnrichedFlight[], filters: FilterState): Enriched
 
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, initialState)
+  const [view, setView] = useState<View>('table')
+  const [selectedIcao, setSelectedIcao] = useState<string | null>(null)
 
   // Refs to debounce lazy fetches (prevent duplicate in-flight requests)
   const pendingAircraft = useRef(new Set<string>())
@@ -273,13 +281,29 @@ export default function Home() {
   // Render
   // -------------------------------------------------------------------
   return (
-    <div className={styles.page}>
+    <div className={view === 'map' ? styles.pageMap : styles.page}>
       <header className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>
             <span className={styles.titleIcon}>✈</span> Flight Tracker
           </h1>
-          <StatusBar flights={enrichedFlights} countdown={state.countdown} />
+          <div className={styles.headerRight}>
+            <div className={styles.viewToggle}>
+              <button
+                className={view === 'table' ? styles.viewBtnActive : styles.viewBtn}
+                onClick={() => setView('table')}
+              >
+                TABLE
+              </button>
+              <button
+                className={view === 'map' ? styles.viewBtnActive : styles.viewBtn}
+                onClick={() => setView('map')}
+              >
+                MAP
+              </button>
+            </div>
+            <StatusBar flights={enrichedFlights} countdown={state.countdown} />
+          </div>
         </div>
       </header>
 
@@ -296,12 +320,20 @@ export default function Home() {
         </div>
       )}
 
-      <FlightTable
-        flights={filteredFlights}
-        loading={state.loading}
-        refreshId={state.refreshId}
-        onRowsVisible={handleRowsVisible}
-      />
+      {view === 'table' ? (
+        <FlightTable
+          flights={filteredFlights}
+          loading={state.loading}
+          refreshId={state.refreshId}
+          onRowsVisible={handleRowsVisible}
+        />
+      ) : (
+        <FlightMap
+          flights={filteredFlights}
+          selectedIcao={selectedIcao}
+          onFlightSelect={setSelectedIcao}
+        />
+      )}
     </div>
   )
 }
