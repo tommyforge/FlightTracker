@@ -1,0 +1,94 @@
+@use '../styles/variables' as *;
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: $space-3 $space-4;
+  padding: $space-3 $space-6;
+  background: $color-bg-surface;
+  border-bottom: 1px solid $color-border;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.label {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.input,
+.select {
+  padding: $space-1 $space-2;
+  height: 2rem;
+  background: $color-bg-elevated;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  color: $color-text-primary;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  outline: none;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: $color-text-accent;
+  }
+
+  option {
+    background: $color-bg-elevated;
+    color: $color-text-primary;
+  }
+}
+
+.input {
+  width: 220px;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+
+  // Hide browser clear button (handled via our clear all button)
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+}
+
+.select {
+  min-width: 130px;
+  cursor: pointer;
+  appearance: none;
+  padding-right: $space-6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238892a4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.clearBtn {
+  align-self: flex-end;
+  height: 2rem;
+  padding: 0 $space-3;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 4px;
+  color: $color-alert;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: background $transition-fast, border-color $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: $color-alert;
+  }
+}

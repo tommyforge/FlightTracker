@@ -1,0 +1,230 @@
+@use '../styles/variables' as *;
+
+.outer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-2 $space-6;
+  background: $color-bg-surface;
+  border-bottom: 1px solid $color-border-subtle;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.count {
+  color: $color-text-secondary;
+}
+
+.pageSizeRow {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.label {
+  margin-right: $space-2;
+  color: $color-text-muted;
+}
+
+.pageSizeBtn,
+.pageSizeActive {
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid $color-border;
+  background: transparent;
+  color: $color-text-secondary;
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-bg-hover;
+    color: $color-text-primary;
+  }
+}
+
+.pageSizeActive {
+  background: $color-bg-elevated;
+  border-color: $color-text-accent;
+  color: $color-text-accent;
+}
+
+.wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  padding: $space-2 $space-3;
+  background: $color-bg-elevated;
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid $color-border;
+  cursor: pointer;
+  user-select: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.thLazy {
+  color: $color-text-muted;
+}
+
+.sortNeutral {
+  opacity: 0.3;
+  margin-left: $space-1;
+}
+
+.sortActive {
+  color: $color-text-accent;
+  margin-left: $space-1;
+}
+
+.tr {
+  border-bottom: 1px solid $color-border-subtle;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-bg-hover;
+  }
+}
+
+.skeletonRow {
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.td {
+  padding: 0 $space-3;
+  height: $table-row-height;
+  color: $color-text-primary;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.numeric {
+  text-align: right;
+  color: $color-text-secondary;
+}
+
+.callsign {
+  color: $color-text-accent;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.lazy {
+  min-width: 100px;
+}
+
+// Status badges
+.airborne {
+  color: $color-airborne;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.grounded {
+  color: $color-grounded;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.domestic {
+  color: $color-domestic;
+}
+
+.international {
+  color: $color-international;
+}
+
+// Skeleton shimmer (keyframe defined in globals.scss)
+.skeleton {
+  display: inline-block;
+  width: 72px;
+  height: 0.85em;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    $color-skeleton-base 25%,
+    $color-skeleton-highlight 50%,
+    $color-skeleton-base 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+  vertical-align: middle;
+}
+
+// Empty / pagination
+.empty {
+  padding: $space-8;
+  text-align: center;
+  color: $color-text-muted;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-3;
+  border-top: 1px solid $color-border-subtle;
+  background: $color-bg-surface;
+}
+
+.pageBtn {
+  padding: $space-1 $space-3;
+  background: $color-bg-elevated;
+  border: 1px solid $color-border;
+  border-radius: 3px;
+  color: $color-text-secondary;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  transition: background $transition-fast, color $transition-fast;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: $color-bg-hover;
+    color: $color-text-primary;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.pageInfo {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  min-width: 80px;
+  text-align: center;
+}

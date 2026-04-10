@@ -25,9 +25,10 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   _req: Request,
-  { params }: { params: { callsign: string } }
+  { params }: { params: Promise<{ callsign: string }> }
 ) {
-  const callsign = params.callsign.trim().toUpperCase()
+  const { callsign: rawCallsign } = await params
+  const callsign = rawCallsign.trim().toUpperCase()
 
   // Return cached entry if still valid
   const cached = cache.get(callsign)

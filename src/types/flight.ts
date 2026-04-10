@@ -1,3 +1,30 @@
+export interface AircraftMeta {
+  aircraftType: string | null
+  manufacturer: string | null
+}
+
+export interface RouteInfo {
+  isDomestic: boolean | null
+  depCountry: string | null
+  arrCountry: string | null
+}
+
+export interface FilterState {
+  search: string
+  airlineCountry: string
+  airline: string
+  aircraftType: string
+  status: 'all' | 'airborne' | 'grounded'
+  altitude: 'all' | 'low' | 'mid' | 'high'
+  domestic: 'all' | 'domestic' | 'international'
+}
+
+// Flight with cache values merged in + loading flags (used by UI components)
+export interface EnrichedFlight extends Flight {
+  _aircraftLoading: boolean
+  _routeLoading: boolean
+}
+
 export interface Flight {
   icao24: string
   callsign: string

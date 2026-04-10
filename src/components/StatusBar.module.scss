@@ -1,0 +1,85 @@
+@use '../styles/variables' as *;
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  flex-wrap: wrap;
+}
+
+.divider {
+  width: 1px;
+  height: 1.5rem;
+  background: $color-border;
+  flex-shrink: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  min-width: 48px;
+}
+
+.statLabel {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.statValue {
+  font-family: $font-mono;
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.airborne {
+  color: $color-airborne;
+}
+
+.grounded {
+  color: $color-grounded;
+}
+
+// Countdown ring
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-left: $space-2;
+}
+
+.ring {
+  width: 20px;
+  height: 20px;
+  transform: rotate(-90deg);
+  flex-shrink: 0;
+}
+
+.ringTrack {
+  fill: none;
+  stroke: $color-border;
+  stroke-width: 2;
+}
+
+.ringProgress {
+  fill: none;
+  stroke: $color-text-accent;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.countdownNum {
+  font-family: $font-mono;
+  font-size: $font-size-xs;
+  color: $color-text-accent;
+  min-width: 2.5ch;
+  text-align: right;
+}

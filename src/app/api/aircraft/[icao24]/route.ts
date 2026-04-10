@@ -23,9 +23,10 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   _req: Request,
-  { params }: { params: { icao24: string } }
+  { params }: { params: Promise<{ icao24: string }> }
 ) {
-  const icao24 = params.icao24.toLowerCase()
+  const { icao24: rawIcao } = await params
+  const icao24 = rawIcao.toLowerCase()
 
   // Return cached entry if still valid
   const cached = cache.get(icao24)

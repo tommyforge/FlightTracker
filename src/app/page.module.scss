@@ -1,0 +1,50 @@
+@use '../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $color-bg-base;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  background: $color-bg-surface;
+  border-bottom: 1px solid $color-border;
+  padding: 0 $space-6;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  height: $header-height;
+}
+
+.title {
+  font-family: $font-mono;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $color-text-primary;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.titleIcon {
+  color: $color-text-accent;
+  margin-right: $space-2;
+}
+
+.error {
+  margin: $space-3 $space-6;
+  padding: $space-3 $space-4;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 4px;
+  color: $color-alert;
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+}

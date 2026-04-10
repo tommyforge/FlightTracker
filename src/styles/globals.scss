@@ -56,3 +56,9 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: $color-text-muted;
 }
+
+/* Skeleton shimmer — referenced by component modules */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
